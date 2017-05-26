@@ -1,37 +1,72 @@
 -- Model of Texas Holdem
 
-data Suit = Clubs | Spades | Hearts | Diamonds deriving (Enum, Ord, Eq, Show)
+import Data.SortedList
 
-data Value = Ace | King | Queen | Jack | Ten | Nine | Eight | Seven | Six | Five | Four | Three | Two deriving (Enum, Ord, Eq, Show)
+data Suit = Diamonds | Hearts | Spades | Clubs deriving (Enum, Ord, Eq)
 
-data Card = Card Suit Value deriving (Eq, Show)
+instance Show Suit where
+    show Clubs = "♣"
+    show Spades = "♠" 
+    show Hearts = "♥"
+    show Diamonds = "♦"
 
-type Cards = [Card]
+data Value = Two | Three | Four | Five | Six | Seven | Eight | Nine | Ten | Jack | Queen | King | Ace deriving (Enum, Ord, Eq)
+
+instance Show Value where
+    show Ace = "A"
+    show King = "K"
+    show Queen = "Q"
+    show Jack = "J"
+    show Ten = "T"
+    show Nine = "9"
+    show Eight = "8"
+    show Seven = "7"
+    show Six = "6"
+    show Five = "5"
+    show Four = "4"
+    show Three = "3"
+    show Two = "2"
+
+data Card = Card {
+    suit :: Suit,
+    value :: Value } deriving (Eq, Ord)
+
+instance Show Card where
+    show (Card suit value) = (show suit) ++ " " ++ (show value)
+
+type Cards = SortedList Card
 
 suits :: [Suit]
-suits = [Clubs .. Diamonds]
+suits = [Diamonds .. Clubs]
 
 values :: [Value]
-values = [Ace .. Two]
+values = [Two .. Ace]
 
 deck :: Cards
-deck = [ Card s v | s <- suits, v <- values]
+deck = toSortedList $ [ Card s v | s <- suits, v <- values]
 
 -- All values should be present in sorted order
-data Rank = HighCard Value Value Value Value Value | -- All 5 cards 
-    Pair Value Value Value Value | -- The pair and 3 kickers
-    TwoPair Value Value Value | -- Two pairs a kicker
-    ThreeOfAKind Value Value Value | -- The tripple and two kickers
+data Rank = HighCard [Value] | -- All 5 cards 
+    Pair Value Cards | -- The pair and 3 kickers
+    TwoPair Value Value Card | -- Two pairs a kicker
+    ThreeOfAKind Value Cards | -- The tripple and two kickers
     Straight Value | -- High card of the straigt
     Flush Value | -- High card of the flush
     FullHouse  Value Value | -- Tripples and pair
     FourOfAKind Value Value | -- Quadruple and a kicker
     StraightFlush Value -- High card of straight and flush
-    deriving (Eq, Show)
+    deriving (Eq)
+
+instance Show Rank where
+    show (HighCard xs) = (show $ maximum xs) ++ "high with kickers: " ++ (show xs)
+    show (Pair p xs) = "Paif of " ++ (show p) ++ "s with kickers: " ++ (show xs)
+    show (TwoPair p1 p2 x) = "Pair of " ++ (show p1) ++ " and " ++ (show p2) ++ "with kicker " ++ (show x)
 
 instance Ord Rank where
 
-    compare (HighCard a1 a2 a3 a4 a5) (HighCard b1 b2 b3 b4 b5) = compare [a1, a2, a3, a4, a5] [b1, b2, b3, b4, b5]
-    compare (HighCard _ _ _ _ _) _ = LT
-    compare _ (HighCard _ _ _ _ _) = GT
+    compare (HighCard xs) (HighCard ys) = compare xs ys
+    compare (HighCard _ ) _ = LT
+    compare _ (HighCard _ ) = GT
+
+
 
