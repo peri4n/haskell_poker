@@ -1,6 +1,9 @@
 -- Model of Texas Holdem
 
-import Data.SortedList
+import Data.Foldable as F
+import Data.Map as M
+import Data.List  as L
+import Data.Function
 
 data Suit = Diamonds | Hearts | Spades | Clubs deriving (Enum, Ord, Eq)
 
@@ -28,25 +31,39 @@ instance Show Value where
     show Two = "2"
 
 data Card = Card {
-    suit :: Suit,
-    value :: Value } deriving (Eq, Ord)
+    suit :: Suit, 
+    value :: Value } deriving (Eq)
+
+toPair :: Card -> (Suit, Value)
+toPair x = (suit x, value x)
+
+instance Ord Card where
+    compare = compare `on` value
 
 instance Show Card where
     show (Card suit value) = (show suit) ++ " " ++ (show value)
 
-type Cards = SortedList Card
-
-suits :: [Suit]
-suits = [Diamonds .. Clubs]
-
-values :: [Value]
-values = [Two .. Ace]
+type Cards = [Card]
 
 deck :: Cards
-deck = toSortedList $ [ Card s v | s <- suits, v <- values]
+deck = [ Card s v | s <- [Diamonds .. Clubs], v <- [Two .. Ace]]
+
+groupBySuit :: Cards -> Map Suit Cards
+groupBySuit xs = F.foldl ins M.empty xs
+    where ins acc card = insertWith (++) (suit card) [card] acc
+
+groupByValue :: Cards -> Map Value Cards
+groupByValue xs = F.foldl ins M.empty xs
+    where ins acc card = insertWith (++) (value card) [card] acc
+
+values :: Cards -> [Value]
+values = L.map value
+
+makeHighCard :: Cards -> Maybe Rank
+makeHighCard xs = if (F.null xs) then Nothing else Just (HighCard $ values xs)
 
 -- All values should be present in sorted order
-data Rank = HighCard [Value] | -- All 5 cards 
+data Rank = HighCard [Value] | -- All 5 cards
     Pair Value Cards | -- The pair and 3 kickers
     TwoPair Value Value Card | -- Two pairs a kicker
     ThreeOfAKind Value Cards | -- The tripple and two kickers
