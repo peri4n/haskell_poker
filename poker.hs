@@ -1,17 +1,17 @@
 -- Model of Texas Holdem
 
 import Data.Foldable as F
-import Data.Map as M
-import Data.List  as L
+import Data.Map(Map, fromListWith)
+import Data.List(map)
 import Data.Function
 
 data Suit = Diamonds | Hearts | Spades | Clubs deriving (Enum, Ord, Eq)
 
 instance Show Suit where
-    show Clubs = "♣"
-    show Spades = "♠" 
-    show Hearts = "♥"
-    show Diamonds = "♦"
+    show Clubs = "♣ "
+    show Spades = "♠ " 
+    show Hearts = "♥ "
+    show Diamonds = "♦ "
 
 data Value = Two | Three | Four | Five | Six | Seven | Eight | Nine | Ten | Jack | Queen | King | Ace deriving (Enum, Ord, Eq)
 
@@ -41,23 +41,27 @@ instance Ord Card where
     compare = compare `on` value
 
 instance Show Card where
-    show (Card suit value) = (show suit) ++ " " ++ (show value)
+    show (Card suit value) = (show suit) ++ (show value)
 
 type Cards = [Card]
 
 deck :: Cards
 deck = [ Card s v | s <- [Diamonds .. Clubs], v <- [Two .. Ace]]
 
+keyFrom :: (a -> b) -> a -> (b, [a])
+keyFrom f x = (f x, [x])
+
+groupBy :: (Ord b) => (a -> b) -> [a] -> Map b [a]
+groupBy f xs = fromListWith (++) (map (keyFrom f) xs)
+
 groupBySuit :: Cards -> Map Suit Cards
-groupBySuit xs = F.foldl ins M.empty xs
-    where ins acc card = insertWith (++) (suit card) [card] acc
+groupBySuit = groupBy suit
 
 groupByValue :: Cards -> Map Value Cards
-groupByValue xs = F.foldl ins M.empty xs
-    where ins acc card = insertWith (++) (value card) [card] acc
+groupByValue = groupBy value
 
 values :: Cards -> [Value]
-values = L.map value
+values = map value
 
 makeHighCard :: Cards -> Maybe Rank
 makeHighCard xs = if (F.null xs) then Nothing else Just (HighCard $ values xs)
