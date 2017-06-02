@@ -1,5 +1,7 @@
 -- Model of Texas Holdem
 
+module Cards where
+
 import Data.Foldable as F
 import Data.Map(Map, fromListWith)
 import Data.List(map)
