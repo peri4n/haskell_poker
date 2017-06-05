@@ -4,8 +4,9 @@ module Cards where
 
 import Data.Foldable as F
 import Data.Map(Map, fromListWith)
-import Data.List(map)
+import Data.List(map, sortBy)
 import Data.Function
+import System.Random
 
 data Suit = Diamonds | Hearts | Spades | Clubs deriving (Enum, Ord, Eq)
 
@@ -35,6 +36,19 @@ instance Show Value where
 data Card = Card {
     suit :: Suit, 
     value :: Value } deriving (Eq)
+
+augment :: (RandomGen g) => g -> Cards -> ([(Card, Int)], g)
+augment gen [] = ([], gen)
+augment gen (x:xs) = ((x, draw):rest, g)
+    where
+        (draw, newGen) = random gen
+        (rest, g) = augment newGen xs
+
+shuffle :: (RandomGen g) => g -> Cards -> (Cards, g)
+shuffle g xs = ((map fst xxs), ng)
+    where
+        (axs, ng) = augment g xs
+        xxs = sortBy (compare `on` snd) axs
 
 toPair :: Card -> (Suit, Value)
 toPair x = (suit x, value x)
