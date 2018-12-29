@@ -1,5 +1,5 @@
 
-module Game where
+module Poker.Game where
 
 import Data.Foldable as F
 import Data.Function(on)
@@ -7,8 +7,8 @@ import Data.Map(Map, fromListWith)
 import Data.List(map, sortBy)
 import System.Random
 
-import Cards
-import Ranking
+import Poker.Cards
+import Poker.Ranking
 
 deck :: Cards
 deck = [ Card s v | s <- [Diamonds .. Clubs], v <- [Two .. Ace]]

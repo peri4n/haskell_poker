@@ -1,6 +1,6 @@
-module Ranking where
+module Poker.Ranking where
 
-import Cards
+import Poker.Cards
 
 -- All values should be present in sorted order
 data Rank = HighCard [Value] | -- All 5 cards

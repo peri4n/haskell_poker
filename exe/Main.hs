@@ -1,7 +1,7 @@
 module Main where
 
-import Cards
-import Game
+import Poker.Cards
+import Poker.Game
 
 main :: IO ()
 main = putStrLn $ concat $ map show deck

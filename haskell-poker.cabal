@@ -15,12 +15,21 @@ build-type:          Simple
 extra-source-files:  ChangeLog.md
 cabal-version:       >=1.10
 
-executable haskell-poker
-  main-is:             Main.hs
-  other-modules:       Cards, Game, Ranking
-  -- other-extensions:    
-  build-depends:       base >=4.10,
-                       containers,
+library
+  exposed-modules:     Poker.Cards
+                       Poker.Game 
+                       Poker.Ranking
+  build-depends:       containers, 
+                       base >= 4.10,
                        random
   hs-source-dirs:      src
+  ghc-options:         -dynamic
   default-language:    Haskell2010
+
+executable poker
+  main-is:             Main.hs
+  hs-source-dirs:      exe
+  build-depends:       haskell-poker,
+                       containers, 
+                       base >= 4.10
+  ghc-options:         -dynamic

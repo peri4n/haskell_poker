@@ -1,6 +1,4 @@
--- Model of Texas Holdem
-
-module Cards where
+module Poker.Cards where
 
 import Data.Function(on)
 
