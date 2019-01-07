@@ -1,4 +1,12 @@
-module Poker.Cards where
+module Poker.Cards (
+    Value,
+    Suit,
+    Card,
+    Cards,
+    suit,
+    value,
+    newDeck
+    ) where
 
 import Data.Function(on)
 
@@ -39,3 +47,5 @@ instance Ord Card where
 instance Show Card where
     show (Card suit value) = (show suit) ++ (show value)
 
+newDeck :: Cards
+newDeck = [ Card s v | s <- [Diamonds .. Clubs], v <- [Two .. Ace]]

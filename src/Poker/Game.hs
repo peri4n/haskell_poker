@@ -10,9 +10,6 @@ import System.Random
 import Poker.Cards
 import Poker.Ranking
 
-deck :: Cards
-deck = [ Card s v | s <- [Diamonds .. Clubs], v <- [Two .. Ace]]
-
 keyFrom :: (a -> b) -> a -> (b, [a])
 keyFrom f x = (f x, [x])
 
