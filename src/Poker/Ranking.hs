@@ -1,5 +1,6 @@
 module Poker.Ranking where
 
+import Data.Foldable as F
 import Poker.Cards
 
 -- All values should be present in sorted order
@@ -24,3 +25,7 @@ instance Ord Rank where
     compare (HighCard xs) (HighCard ys) = compare xs ys
     compare (HighCard _ ) _ = LT
     compare _ (HighCard _ ) = GT
+
+makeHighCard :: Cards -> Maybe Rank
+makeHighCard xs = if F.null xs then Nothing else Just (HighCard $ values xs)
+

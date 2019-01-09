@@ -1,43 +1,35 @@
 
 module Poker.Game where
 
-import Data.Foldable as F
 import Data.Function(on)
-import Data.Map(Map, fromListWith)
 import Data.List(map, sortBy)
-import System.Random
 
-import Poker.Cards
+import Poker.Cards (Cards, Card, shuffledDeck)
 import Poker.Ranking
 
-keyFrom :: (a -> b) -> a -> (b, [a])
-keyFrom f x = (f x, [x])
+data Player = Player { name :: String
+                     , cards :: Cards
+                     } deriving Show
 
-groupBy :: (Ord b) => (a -> b) -> [a] -> Map b [a]
-groupBy f xs = fromListWith (++) (map (keyFrom f) xs)
+newPlayer :: String -> Player
+newPlayer name = Player name []
 
-groupBySuit :: Cards -> Map Suit Cards
-groupBySuit = groupBy suit
+dealCard :: Card -> Player -> Player
+dealCard c (Player name cs) = Player name (c:cs)
 
-groupByValue :: Cards -> Map Value Cards
-groupByValue = groupBy value
+data Game = Game [Player] Cards deriving Show
 
-values :: Cards -> [Value]
-values = map value
+newGame :: Int -> IO Game
+newGame n = Game (map (newPlayer . show) [1..n]) <$> shuffledDeck
 
-makeHighCard :: Cards -> Maybe Rank
-makeHighCard xs = if (F.null xs) then Nothing else Just (HighCard $ values xs)
-
-augment :: (RandomGen g) => g -> Cards -> ([(Card, Int)], g)
-augment gen [] = ([], gen)
-augment gen (x:xs) = ((x, draw):rest, g)
+dealCards' :: Game -> Game
+dealCards' (Game players cards) = Game dealtPlayers restCards
     where
-        (draw, newGen) = random gen
-        (rest, g) = augment newGen xs
+        (draws,restCards) = splitAt (length players) cards
+        dealtPlayers = zipWith dealCard draws players
 
-shuffle :: (RandomGen g) => g -> Cards -> (Cards, g)
-shuffle g xs = ((map fst xxs), ng)
-    where
-        (axs, ng) = augment g xs
-        xxs = sortBy (compare `on` snd) axs
+dealCards :: Int -> Game -> Game
+dealCards n game = iterate dealCards' game !! n
+
+
 

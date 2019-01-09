@@ -21,9 +21,9 @@ library
                        Poker.Ranking
   build-depends:       containers, 
                        base >= 4.10,
-                       random
+                       random,
+                       random-shuffle
   hs-source-dirs:      src
-  ghc-options:         -dynamic
   default-language:    Haskell2010
 
 executable poker
@@ -31,8 +31,8 @@ executable poker
   hs-source-dirs:      exe
   build-depends:       poker,
                        containers, 
-                       base >= 4.10
-  ghc-options:         -dynamic
+                       base >= 4.10,
+                       random
   default-language:    Haskell2010
 
 test-suite poker-tests
@@ -43,6 +43,5 @@ test-suite poker-tests
                        poker,
                        hspec,
                        QuickCheck
-  ghc-options:         -dynamic
   default-language:    Haskell2010
 

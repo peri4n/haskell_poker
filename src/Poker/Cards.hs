@@ -5,10 +5,14 @@ module Poker.Cards (
     Cards,
     suit,
     value,
-    newDeck
+    values,
+    newDeck,
+    shuffledDeck
     ) where
 
 import Data.Function(on)
+import Data.Map(Map, fromListWith)
+import System.Random.Shuffle
 
 data Suit = Diamonds | Hearts | Spades | Clubs deriving (Enum, Ord, Eq)
 
@@ -41,11 +45,30 @@ data Card = Card {
 
 type Cards = [Card]
 
+values :: Cards -> [Value]
+values = map value
+
 instance Ord Card where
     compare = compare `on` value
 
 instance Show Card where
-    show (Card suit value) = (show suit) ++ (show value)
+    show (Card suit value) = show suit ++ show value
 
 newDeck :: Cards
 newDeck = [ Card s v | s <- [Diamonds .. Clubs], v <- [Two .. Ace]]
+
+shuffledDeck :: IO Cards
+shuffledDeck = shuffleM newDeck
+
+groupBySuit :: Cards -> Map Suit Cards
+groupBySuit cs = fromListWith (++) $ map withSuit cs
+    where
+        withSuit :: Card -> (Suit, [Card])
+        withSuit c = (suit c, [c])
+
+groupByValue :: Cards -> Map Value Cards
+groupByValue cs = fromListWith (++) $ map withValue cs
+    where
+        withValue :: Card -> (Value, [Card])
+        withValue c = (value c, [c])
+
