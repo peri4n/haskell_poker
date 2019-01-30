@@ -40,6 +40,7 @@ test-suite poker-tests
   main-is:             Test.hs
   hs-source-dirs:      test
   build-depends:       base >= 4.10,
+                       containers,
                        poker,
                        hspec,
                        QuickCheck

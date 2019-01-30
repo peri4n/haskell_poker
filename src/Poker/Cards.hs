@@ -7,7 +7,9 @@ module Poker.Cards (
     value,
     values,
     newDeck,
-    shuffledDeck
+    shuffledDeck,
+    groupByValue,
+    groupBySuit
     ) where
 
 import Data.Function(on)
