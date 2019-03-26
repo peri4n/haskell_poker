@@ -37,6 +37,7 @@ executable poker
 
 test-suite poker-tests
   type:                exitcode-stdio-1.0
+  other-modules:       Cards
   main-is:             Test.hs
   hs-source-dirs:      test
   build-depends:       base >= 4.10,
