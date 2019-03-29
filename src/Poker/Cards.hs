@@ -7,15 +7,13 @@ module Poker.Cards
   , value
   , values
   , newDeck
-  , shuffledDeck
   , groupByValue
   , groupBySuit
   ) where
 
-import           Data.Function         (on)
-import           Data.Map              (Map, fromListWith)
+import           Data.Function (on)
+import           Data.Map      (Map, fromListWith)
 import           System.Random
-import           System.Random.Shuffle
 
 data Suit
   = Diamonds
@@ -79,9 +77,6 @@ instance Show Card where
 
 newDeck :: Cards
 newDeck = [Card s v | s <- [Diamonds .. Clubs], v <- [Two .. Ace]]
-
-shuffledDeck :: StdGen -> Cards
-shuffledDeck = shuffle' newDeck 52
 
 groupBySuit :: Cards -> Map Suit Cards
 groupBySuit cs = fromListWith (++) $ map withSuit cs

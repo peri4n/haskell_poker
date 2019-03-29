@@ -1,6 +1,10 @@
 module Main where
 
-import Test.Hspec
-import Cards
+import           CardsSpec
+import           GameSpec
+import           Test.Hspec
 
-main = hspec cardTests
+main =
+  hspec $ do
+    cardTests
+    gameTests

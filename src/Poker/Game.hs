@@ -1,10 +1,13 @@
 module Poker.Game where
 
-import           Data.Function (on)
-import           Data.List     (map, sortBy)
+import           Control.Monad.State
+import           Data.Function         (on)
+import           Data.List             (map, sortBy)
 import           System.Random
+import           System.Random.Shuffle
 
-import           Poker.Cards   (Card, Cards, shuffledDeck)
+import           Poker.Cards           (Card, Cards, newDeck)
+import           Poker.Config
 import           Poker.Ranking
 
 data Player = Player
@@ -18,14 +21,17 @@ newPlayer name = Player name []
 dealCard :: Card -> Player -> Player
 dealCard c (Player name cs) = Player name (c : cs)
 
-data Game =
-  Game [Player]
-       Cards
-       StdGen
-  deriving (Show)
+type Step = State Game
+
+data Game = Game
+  { players :: [Player]
+  , deck    :: Cards
+  , rng     :: StdGen
+  } deriving (Show)
 
 newGame :: Config -> Game
-newGame config = Game (map (newPlayer . show) [1 .. (players config)]) deck rng
+newGame config =
+  Game (map (newPlayer . show) [1 .. (nrOfPlayers config)]) deck rng
   where
     rng = mkStdGen (seed config)
     deck = shuffledDeck rng
@@ -39,7 +45,5 @@ dealCards' (Game players cards rng) = Game dealtPlayers restCards rng
 dealCards :: Int -> Game -> Game
 dealCards n game = iterate dealCards' game !! n
 
-data Config = Config
-  { players :: Int
-  , seed    :: Int
-  }
+shuffledDeck :: StdGen -> Cards
+shuffledDeck = shuffle' newDeck 52

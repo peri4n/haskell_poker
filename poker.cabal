@@ -17,10 +17,12 @@ cabal-version:       >=1.10
 
 library
   exposed-modules:     Poker.Cards
+                       Poker.Config 
                        Poker.Game 
                        Poker.Ranking
-  build-depends:       containers, 
-                       base >= 4.10,
+  build-depends:       base >= 4.10,
+                       containers, 
+                       mtl,
                        random,
                        random-shuffle
   hs-source-dirs:      src
@@ -37,7 +39,8 @@ executable poker
 
 test-suite poker-tests
   type:                exitcode-stdio-1.0
-  other-modules:       Cards
+  other-modules:       CardsSpec
+                     , GameSpec
   main-is:             Test.hs
   hs-source-dirs:      test
   build-depends:       base >= 4.10,
