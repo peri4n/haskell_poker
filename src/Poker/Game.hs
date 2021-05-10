@@ -7,43 +7,22 @@ import           System.Random
 import           System.Random.Shuffle
 
 import           Poker.Cards           (Card, Cards, newDeck)
-import           Poker.Config
 import           Poker.Ranking
 
-data Player = Player
-  { name  :: String
-  , cards :: Cards
-  } deriving (Show)
+type Draw = State Game
 
-newPlayer :: String -> Player
-newPlayer name = Player name []
+newtype Game = Game { deck    :: Cards } deriving (Show)
 
-dealCard :: Card -> Player -> Player
-dealCard c (Player name cs) = Player name (c : cs)
+draw :: Draw Card
+draw = state $ \(Game (c:cs)) -> (c, Game cs)
 
-type Step = State Game
+draws :: Int -> Draw Cards
+draws n = replicateM n draw
 
-data Game = Game
-  { players :: [Player]
-  , deck    :: Cards
-  , rng     :: StdGen
-  } deriving (Show)
+newGame :: IO Game
+newGame = do
+  Game . shuffledDeck <$> getStdGen
 
-newGame :: Config -> Game
-newGame config =
-  Game (map (newPlayer . show) [1 .. (nrOfPlayers config)]) deck rng
-  where
-    rng = mkStdGen (seed config)
-    deck = shuffledDeck rng
-
-dealCards' :: Game -> Game
-dealCards' (Game players cards rng) = Game dealtPlayers restCards rng
-  where
-    (draws, restCards) = splitAt (length players) cards
-    dealtPlayers = zipWith dealCard draws players
-
-dealCards :: Int -> Game -> Game
-dealCards n game = iterate dealCards' game !! n
 
 shuffledDeck :: StdGen -> Cards
 shuffledDeck = shuffle' newDeck 52
