@@ -19,10 +19,15 @@ draw = state $ \(Game (c:cs)) -> (c, Game cs)
 draws :: Int -> Draw Cards
 draws n = replicateM n draw
 
-newGame :: IO Game
-newGame = do
-  Game . shuffledDeck <$> getStdGen
-
+drawHand :: Int -> Cards
+drawHand seed = do
+  let game = newGame seed
+   in evalState (draws 5) game
 
 shuffledDeck :: StdGen -> Cards
 shuffledDeck = shuffle' newDeck 52
+
+newGame :: Int -> Game
+newGame seed = 
+  let gen = mkStdGen seed
+   in Game (shuffledDeck gen)
